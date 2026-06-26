@@ -1,11 +1,12 @@
-# 🔐 JWT Login Reservas- Django Authentication System
+# Django Projects - Basico
+## Se actualiza con frecuencia
+
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
-
-Sistema de autenticación con **JWT (JSON Web Tokens)** desarrollado en Django. Incluye un dashboard con visualización de tokens, registro de usuarios, Reservas y documentación Swagger.
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![Status](https://img.shields.io/badge/Status-En%20Desarrollo-yellow?style=for-the-badge)
+![Despliege](https://img.shields.io/badge/Despliegue-pythonanywhere-red?style=for-the-badge)
 
 ---
 
@@ -13,50 +14,37 @@ Sistema de autenticación con **JWT (JSON Web Tokens)** desarrollado en Django. 
 
 | Tecnología | Descripción |
 |------------|-------------|
-| ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) | Lenguaje de programación principal |
-| ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white) | Framework web de alto nivel |
-| ![Django REST Framework](https://img.shields.io/badge/DRF-ff1709?style=for-the-badge&logo=django&logoColor=white) | Toolkit para construir APIs RESTful |
-| ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) | Autenticación basada en tokens |
-| ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) | Base de datos ligera |
-| ![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white) | Framework CSS para el dashboard |
-| ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black) | Documentación interactiva de la API |
+| ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) | Lenguaje de programación principal de alto nivel. |
+| ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white) | Entorno de desarrollo web enfocado en la velocidad y la seguridad. |
+| ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | Librería de Python para análisis y manipulación de datos. |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) | Sistema de base de datos relacional avanzado y de código abierto. |
+| ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) | Base de datos ligera y sin configuración, ideal para desarrollo. |
+| ![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white) | Sistema operativo servidor para un entorno de despliegue estable. |
+| ![PyCharm](https://img.shields.io/badge/PyCharm-000000?style=for-the-badge&logo=pycharm&logoColor=white) | Entorno de desarrollo integrado (IDE) para Python. |
 
 ---
 
-## 📋 Características
+## 📖 Descripción
 
-- ✅ **Autenticación JWT** - Tokens de acceso y refresco
-- ✅ **Dashboard interactivo** - Visualización de tokens con botón de copiar
-- ✅ **Duración configurable** - Token de acceso (8 horas), Refresh (1 día)
-- ✅ **Documentación Swagger** - Endpoints documentados automáticamente
-- ✅ **Interfaz Bootstrap** - Diseño responsive y moderno
-- ✅ **Seguridad** - Tokens rotativos y blacklist
+Este repositorio contiene proyectos de ejemplo desarrollados (*código fuente y despliegue*) con Django, diseñados para demostrar la implementación de operaciones CRUD en aplicaciones web. Los proyectos están en constante evolución y sirven como base para aprender buenas prácticas y patrones de desarrollo.
 
----
+### Proyectos incluidos:
 
-## 📸 Capturas de pantalla
-
-### Home Page - Login
-![Home Page](https://github.com/moleculax/Django/blob/main/capturasP/jwtlogin.png?raw=true)
-
-### Dashboard con Tokens
-![Dashboard](https://github.com/moleculax/Django/blob/main/capturasP/dasjwtlogin.png?raw=true)
+| Proyecto | Descripción | Codigo | Despliegue|
+|----------|-------------|--------|----- |
+| **apiMovie**    | API RESTful para la gestión de películas con autenticación JWT. | [Ver código](https://github.com/moleculax/Django/tree/main/apimovie) |
+| **djBlog**    | Blog desarrollado con Django, con panel de administración y sistema de publicaciones. | [Ver código](https://github.com/moleculax/Django/tree/main/djblog) |
+| **JWT Login Data**    |  Sistema de autenticación con JWT (JSON Web Tokens). Incluye un dashboard con visualización de tokens (👤 **Usuario:** <span style="color: green;">`admin`</span> 🔐 **Password:** <span style="color: blue;">`admin123`</span>)| [Ver código](https://github.com/moleculax/Django/tree/main/jwtlogin) |  [jwtloginData](https://moleculax.pythonanywhere.com/)  🚀|
 
 ---
 
-## 🔧 Instalación y configuración
+## 🚀 Cómo empezar
 
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/moleculax/Django.git
-cd Django/jwtlogin
-
+1. Clona el repositorio:
+ ```bash
+   git clone https://github.com/moleculax/Django.git
 ```
-**Puede verlo en produccion en:**
 
-[https://moleculax.pythonanywhere.com/](https://moleculax.pythonanywhere.com/)
 
-- usuario: admin
-- password: admin123
+[EjGomez](https://moleculaxapp.vercel.app/)
 
