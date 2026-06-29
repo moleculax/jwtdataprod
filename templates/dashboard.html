@@ -8,39 +8,33 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- BOOTSTRAP ICONS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .doc-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #0d6efd;
+        }
+        .doc-section h5 {
+            color: #0d6efd;
+        }
+        .badge-pandas {
+            background-color: #150458;
+            color: white;
+        }
+        .badge-matplotlib {
+            background-color: #11557c;
+            color: white;
+        }
+    </style>
 </head>
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="navbar-text text-light me-3">
-                            <i class="bi bi-person-circle"></i> {{ user.username }}
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/logout/" class="btn btn-danger btn-sm">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include "./includes/navbar.html" %}
 
     <!-- CONTENIDO PRINCIPAL -->
     <div class="container-fluid mt-4">
-
-
 
         <!-- TOKENS Y REFRESH -->
         <div class="row g-4 mb-4">
@@ -139,7 +133,95 @@
                             <button class="btn btn-outline-success" onclick="location.reload()">
                                 <i class="bi bi-arrow-repeat"></i> Recargar
                             </button>
+                            <a href="/reporte-empleados"
+                               class="btn btn-outline-primary"
+                               title="Lee un archivo CSV y muestra los datos de empleados en una tabla">
+                                <i class="bi bi-file-earmark-spreadsheet"></i> Reporte Empleados
+                            </a>
+                            <a href="/grafica-sueldos"
+                               class="btn btn-outline-primary"
+                               title="grafica promedio sueldos">
+                                <i class="bi bi-file-earmark-spreadsheet"></i> Promedio sueldos
+                            </a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- DOCUMENTACIÓN DE PANDAS EN EL PROYECTO     -->
+        <!-- ========================================== -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-code"></i>
+                            Análisis de Datos con Pandas
+                            <span class="badge badge-pandas ms-2">Pandas</span>
+                            <span class="badge badge-matplotlib ms-1">Matplotlib</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="doc-section">
+                                    <h5><i class="bi bi-database"></i> Procesamiento de Datos</h5>
+                                    <p>
+                                        El proyecto utiliza <strong>Pandas</strong> para la lectura y procesamiento de archivos CSV.
+                                        Los datos se cargan desde <code>data/reportes/excel/empleados.csv</code> y se procesan
+                                        para generar estadísticas y reportes.
+                                    </p>
+                                    <ul>
+                                        <li><strong>Lectura de CSV:</strong> <code>pd.read_csv()</code> con separador punto y coma (<code>;</code>)</li>
+                                        <li><strong>Agrupación:</strong> <code>groupby('Departamento')</code> para calcular promedios por categoría</li>
+                                        <li><strong>Estadísticas:</strong> Cálculo de sueldos promedio, edad promedio, valores máximos y mínimos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="doc-section" style="border-left-color: #28B463;">
+                                    <h5><i class="bi bi-bar-chart"></i> Generación de Gráficos</h5>
+                                    <p>
+                                        Con <strong>Matplotlib</strong> se generan gráficos estadísticos a partir de los datos procesados:
+                                    </p>
+                                    <ul>
+                                        <li><strong>Gráfico de líneas:</strong> Visualización de sueldos promedio por departamento</li>
+                                        <li><strong>Exportación:</strong> Los gráficos se guardan en <code>data/reportes/graficos/</code> con timestamp</li>
+                                        <li><strong>Incrustación:</strong> Los gráficos se convierten a Base64 para mostrarse en HTML</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="doc-section" style="border-left-color: #F39C12;">
+                                    <h5><i class="bi bi-table"></i> Visualización de Datos</h5>
+                                    <p>
+                                        Los DataFrames se convierten a tablas HTML estilizadas con Bootstrap:
+                                    </p>
+                                    <ul>
+                                        <li><strong>Tablas responsivas:</strong> <code>df.to_html()</code> con clases Bootstrap</li>
+                                        <li><strong>Datos en JSON:</strong> Exportación a formato JSON para APIs externas</li>
+                                        <li><strong>Estadísticas dinámicas:</strong> Cálculo automático de métricas en tiempo real</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i>
+                                    <strong>Tecnologías utilizadas:</strong>
+                                    <span class="badge bg-primary">Django 6.0</span>
+                                    <span class="badge badge-pandas">Pandas</span>
+                                    <span class="badge badge-matplotlib">Matplotlib</span>
+                                    <span class="badge bg-success">Bootstrap 5</span>
+                                    <span class="badge bg-warning text-dark">drf-spectacular</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <i class="bi bi-git"></i> Procesamiento de datos en tiempo real |
+                        Los gráficos se guardan en <code>data/reportes/graficos/</code>
                     </div>
                 </div>
             </div>

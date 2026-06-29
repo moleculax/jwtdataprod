@@ -1,46 +1,85 @@
 """
 URL configuration for jwtlogin project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from os import name
 
 from django.contrib import admin
-from django.urls import path, include  # ← CORREGIDO: SE AGREGÓ EL IMPORT DE include
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView  #  AGREGADO
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView  # AGREGADO
+from django.urls import path, include  # ← AGREGADO include
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from .views import home_page, dashboard_page, login_view, logout_view, HomePageAPI
-
+from datagraf.views import ReporteEmpleadosView, ReporteEmpleadosCSVToJSON, GraficaSueldosEmpleados
+from transaccionesdatos import views as transacciones_views
 
 urlpatterns = [
     # HOME
-    path("", home_page, name="home"),  # AGREGADO
-path("dashboard/", dashboard_page, name="dashboard"),
+    path("", home_page, name="home"),
+    path("dashboard/", dashboard_page, name="dashboard"),
+
     # LOGIN / LOGOUT
-    path("login/", login_view, name="login"),  # AGREGADO
-    path("logout/", logout_view, name="logout"),  # ← AGREGADO
+    path("login/", login_view, name="login"),
+    path("logout/", logout_view, name="logout"),
 
+    # ADMIN
     path("admin/", admin.site.urls),
-    path("api-auth/", include("rest_framework.urls")),  # ← AGREGADO
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # ← AGREGADO
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # ← AGREGADO
-    path('api/home/', HomePageAPI.as_view(), name='api_home'),  # ← AGREGADO
+    path("api-auth/", include("rest_framework.urls")),  # ← AHORA FUNCIONA
 
-    # SWAGGER (DRF-SPECTACULAR) ============================================================================
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),  # ← AGREGADO
-    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),  # ← AGREGADO
-    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),  # ← AGREGADO (OPCIONAL)
-    # ======================================================================================================
+    # JWT
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/home/', HomePageAPI.as_view(), name='api_home'),
 
-    path("api/transaccionesdatos/", include("transaccionesdatos.urls")),
+    # SWAGGER
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
+    # TRANSACCIONESDATOS (RUTAS UNIFICADAS)
+    # Clientes
+    path('api/transaccionesdatos/clientes/',
+         transacciones_views.ClienteViewSet.as_view({'get': 'list', 'post': 'create'}),
+         name='cliente-list'),
+    path('api/transaccionesdatos/clientes/<int:pk>/',
+         transacciones_views.ClienteViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='cliente-detail'),
+
+    # Habitaciones
+    path('api/transaccionesdatos/habitaciones/',
+         transacciones_views.HabitacionViewSet.as_view({'get': 'list'}),
+         name='habitacion-list'),
+    path('api/transaccionesdatos/habitaciones/<int:pk>/',
+         transacciones_views.HabitacionViewSet.as_view({'get': 'retrieve'}),
+         name='habitacion-detail'),
+    path('api/transaccionesdatos/habitaciones/disponibles/',
+         transacciones_views.HabitacionViewSet.as_view({'get': 'disponibles'}),
+         name='habitacion-disponibles'),
+    path('api/transaccionesdatos/habitaciones/<int:pk>/ocupar/',
+         transacciones_views.HabitacionViewSet.as_view({'post': 'ocupar'}),
+         name='habitacion-ocupar'),
+    path('api/transaccionesdatos/habitaciones/<int:pk>/liberar/',
+         transacciones_views.HabitacionViewSet.as_view({'post': 'liberar'}),
+         name='habitacion-liberar'),
+    path('api/transaccionesdatos/habitaciones/<int:pk>/mantenimiento/',
+         transacciones_views.HabitacionViewSet.as_view({'post': 'mantenimiento'}),
+         name='habitacion-mantenimiento'),
+
+    # Reservas
+    path('api/transaccionesdatos/transaccionesdatos/',
+         transacciones_views.ReservaViewSet.as_view({'get': 'list', 'post': 'create'}),
+         name='reserva-list'),
+    path('api/transaccionesdatos/transaccionesdatos/<int:pk>/',
+         transacciones_views.ReservaViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+         name='reserva-detail'),
+    path('api/transaccionesdatos/transaccionesdatos/<int:pk>/cancelar/',
+         transacciones_views.ReservaViewSet.as_view({'post': 'cancelar'}),
+         name='reserva-cancelar'),
+    path('api/transaccionesdatos/transaccionesdatos/historial/',
+         transacciones_views.ReservaViewSet.as_view({'get': 'historial'}),
+         name='reserva-historial'),
+
+    # EMPLEADOS
+    path("reporte-empleados/", ReporteEmpleadosView.as_view(), name="reporte_pandas"),
+    path("list-empleados/", ReporteEmpleadosCSVToJSON.as_view(), name="list_empleados"),
+    path("grafica-sueldos", GraficaSueldosEmpleados.as_view(), name="grafica-sueldos")
 ]

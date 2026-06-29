@@ -24,13 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-+p-0&@vg7&-27qd&m^3kn_zsr^exg8ol@k1&%s__%e=jq8g&d6"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-#ALLOWED_HOSTS = []
+DEBUG = True
+ALLOWED_HOSTS = []
 
 # PARA PUBLICAR EN pythonanywhere.com
-DEBUG = False # CAMBIAR A True para desarrollo
+# DEBUG = False # CAMBIAR A True para desarrollo
 # Dominio de PythonAnywhere
-ALLOWED_HOSTS = ['moleculax.pythonanywhere.com', 'www.moleculax.pythonanywhere.com']
+# ALLOWED_HOSTS = ['moleculax.pythonanywhere.com', 'www.moleculax.pythonanywhere.com']
 
 # Application definition
 
