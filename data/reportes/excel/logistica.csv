@@ -1,0 +1,16 @@
+Producto_ID;Producto;Proveedor;Categoria;Stock;Stock_Minimo;Precio_Compra;Precio_Venta;Ubicacion;Tiempo_Entrega
+P001;Laptop Dell;TechImport;Electrónica;45;10;800;1200;Bodega A;3
+P002;Mouse Logitech;MouseWorld;Electrónica;120;20;15;25;Bodega B;2
+P003;Silla Ergonómica;OfficeFurniture;Muebles;30;8;85;150;Bodega A;5
+P004;Monitor Samsung;TechImport;Electrónica;25;10;150;220;Bodega C;4
+P005;Teclado Mecánico;MouseWorld;Electrónica;80;15;40;65;Bodega B;2
+P006;Escritorio Ejecutivo;OfficeFurniture;Muebles;15;5;200;350;Bodega A;6
+P007;Auriculares Sony;AudioTech;Electrónica;100;25;30;50;Bodega C;3
+P008;Lámpara LED;OfficeFurniture;Muebles;200;30;8;15;Bodega B;2
+P009;Tablet Samsung;TechImport;Electrónica;40;10;300;450;Bodega A;4
+P010;Cable USB;MouseWorld;Electrónica;500;50;2;5;Bodega C;1
+P011;Archivador Metálico;OfficeFurniture;Muebles;60;10;25;45;Bodega B;3
+P012;Proyector Epson;TechImport;Electrónica;12;5;500;750;Bodega A;5
+P013;Silla Reunión;OfficeFurniture;Muebles;20;8;60;100;Bodega C;4
+P014;Router Cisco;TechImport;Electrónica;18;5;150;250;Bodega B;3
+P015;Papel A4;OfficeFurniture;Consumibles;300;50;5;10;Bodega A;1

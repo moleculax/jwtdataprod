@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de CSV</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { padding-top: 70px; }
+        .table-responsive { max-height: 400px; overflow-y: auto; }
+        .stat-card { transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .grafico-thumb {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-height: 400px;
+            width: auto;
+            max-width: 100%;
+        }
+        .grafico-thumb:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .modal-img {
+            max-height: 90vh;
+            width: auto;
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- NAVBAR IMPORTADO DESDE includes/navbar.html -->
+    <!-- ========================================== -->
+    {% include "includes/navbar.html" %}
+
+    <!-- ========================================== -->
+    <!-- CONTENIDO PRINCIPAL                         -->
+    <!-- ========================================== -->
+    <div class="container mt-4">
+
+        <!-- ========================================== -->
+        <!-- FORMULARIO PARA SUBIR ARCHIVO              -->
+        <!-- ========================================== -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-upload"></i> Subir archivo CSV o Excel</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" action="{% url 'analisis_csv' %}">
+                    {% csrf_token %}
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-7">
+                            <label for="archivo" class="form-label fw-bold">Seleccionar archivo</label>
+                            <input type="file" class="form-control" id="archivo" name="archivo" accept=".csv,.xlsx,.xls">
+                            <div class="form-text">Formatos soportados: CSV, XLSX, XLS</div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="sep" class="form-label fw-bold">Separador (CSV)</label>
+                            <select class="form-select" id="sep" name="sep">
+                                <option value=";">Punto y coma (;)</option>
+                                <option value=",">Coma (,)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-play-circle"></i> Analizar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RESULTADOS DEL ANÁLISIS                     -->
+        <!-- ========================================== -->
+        {% if nombre_archivo %}
+        <h1 class="text-center mb-4">📊 Análisis de: {{ nombre_archivo }}</h1>
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-primary">
+                    <div class="card-body">
+                        <h2 class="text-primary">{{ total_registros }}</h2>
+                        <p class="text-muted">📏 Total de Registros</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-success">
+                    <div class="card-body">
+                        <h2 class="text-success">{{ columnas|length }}</h2>
+                        <p class="text-muted">📋 Total de Columnas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-info">
+                    <div class="card-body">
+                        <h2 class="text-info">{{ columnas_num|length }}</h2>
+                        <p class="text-muted">🔢 Columnas Numéricas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-warning">
+                    <div class="card-body">
+                        <h2 class="text-warning">{{ columnas_cat|length }}</h2>
+                        <p class="text-muted">🏷️ Columnas Categóricas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico (clic para abrir modal) -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">📈 Gráfico Automático <small class="text-light">(clic para ampliar)</small></h4>
+            </div>
+            <div class="card-body text-center">
+                <img src="data:image/png;base64,{{ grafico }}"
+                     alt="Gráfico generado"
+                     class="grafico-thumb"
+                     data-bs-toggle="modal"
+                     data-bs-target="#modalGrafico"
+                     title="Haz clic para ampliar">
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL PARA AMPLIAR EL GRÁFICO              -->
+        <!-- ========================================== -->
+        <div class="modal fade" id="modalGrafico" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title"><i class="bi bi-image"></i> Gráfico Ampliado</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="data:image/png;base64,{{ grafico }}"
+                             alt="Gráfico ampliado"
+                             class="modal-img">
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-muted">Archivo: {{ nombre_archivo }}</span>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ESTADÍSTICAS DESCRIPTIVAS                  -->
+        <!-- ========================================== -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">📊 Estadísticas Descriptivas</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Columna</th>
+                                <th>Count</th>
+                                <th>Mean</th>
+                                <th>Std</th>
+                                <th>Min</th>
+                                <th>25%</th>
+                                <th>50%</th>
+                                <th>75%</th>
+                                <th>Max</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for col, stats in estadisticas.items %}
+                                <tr>
+                                    <td><strong>{{ col }}</strong></td>
+                                    <td>{{ stats.count|floatformat:0 }}</td>
+                                    <td>{{ stats.mean|floatformat:2 }}</td>
+                                    <td>{{ stats.std|floatformat:2 }}</td>
+                                    <td>{{ stats.min|floatformat:2 }}</td>
+                                    <td>{{ stats.25|floatformat:2 }}</td>
+                                    <td>{{ stats.50|floatformat:2 }}</td>
+                                    <td>{{ stats.75|floatformat:2 }}</td>
+                                    <td>{{ stats.max|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columnas y Valores Nulos -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">📋 Columnas del Archivo</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for col in columnas %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ col }}
+                                    {% if col in columnas_num %}
+                                        <span class="badge bg-info">Numérica</span>
+                                    {% elif col in columnas_cat %}
+                                        <span class="badge bg-warning text-dark">Categórica</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">🧩 Valores Nulos</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for col, nulo in nulos.items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ col }}
+                                    <span class="badge {% if nulo > 0 %}bg-danger{% else %}bg-success{% endif %}">
+                                        {{ nulo }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -145,7 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # ← AGREGAR
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # AGREGAGADO
 
 # Media files (si tienes imágenes subidas)
 MEDIA_URL = '/media/'
@@ -158,3 +158,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+# AGREGADO Directorio raíz donde Django buscará archivos estáticos en desarrollo
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]

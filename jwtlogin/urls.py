@@ -19,6 +19,8 @@ from transaccionesdatos import views as transacciones_views
 # IMPORTO DE TRANSACIONES PARA GRAFICAR VENTAS
 from transaccionesdatos.views import VentasViews
 
+from datagraf.AnalisisGenericoViews import AnalisisCSVView, AnalisisCSV
+
 urlpatterns = [
     path("", home_page, name="home"),
     path("dashboard/", dashboard_page, name="dashboard"),
@@ -80,5 +82,7 @@ urlpatterns = [
     path("dashboard-graficos/", DashboardGraficosView.as_view(), name="dashboard_graficos"),
 
     path("api/listado-ventas", VentasViews.as_view(), name="listado-ventas"),
+    # ANALISIS GENERICO DE CSV
+    path("api/analisis-csv/", AnalisisCSVView.as_view(), name="analisis_csv"),
 
 ]
