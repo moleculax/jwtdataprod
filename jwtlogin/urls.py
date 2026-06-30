@@ -16,6 +16,8 @@ from datagraf.views import (
     DashboardGraficosView,
 )
 from transaccionesdatos import views as transacciones_views
+# IMPORTO DE TRANSACIONES PARA GRAFICAR VENTAS
+from transaccionesdatos.views import VentasViews
 
 urlpatterns = [
     path("", home_page, name="home"),
@@ -76,4 +78,7 @@ urlpatterns = [
     path("experiencia-salario/", ExperienciaSalarioView.as_view(), name="experiencia_salario"),
 
     path("dashboard-graficos/", DashboardGraficosView.as_view(), name="dashboard_graficos"),
+
+    path("api/listado-ventas", VentasViews.as_view(), name="listado-ventas"),
+
 ]

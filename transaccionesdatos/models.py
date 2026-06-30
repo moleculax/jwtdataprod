@@ -257,7 +257,29 @@ class Reserva(models.Model):
         if habitacion:
             habitacion.actualizar_estado()
 
-    class Meta:
+class Meta:
         verbose_name = "Reserva"
         verbose_name_plural = "Reservas"
         ordering = ['-created_at']
+
+
+
+class VentaViews(models.Model):
+    fecha = models.DateField()
+    producto = models.CharField(max_length=100)
+    categoria = models.CharField(max_length=50)
+    vendedor = models.CharField(max_length=100)
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=12, decimal_places=2)
+    region = models.CharField(max_length=50)
+    cliente = models.CharField(max_length=100)
+    metodo_pago = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.producto} - {self.fecha}"
+
+    class Meta:
+        verbose_name = "Venta"
+        verbose_name_plural = "Ventas"
+        ordering = ['-fecha']

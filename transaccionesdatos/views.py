@@ -1,3 +1,5 @@
+from django.db import connection
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,6 +10,8 @@ from datetime import datetime
 from .models import Cliente, Habitacion, Reserva
 from .serializers import ClienteSerializer, HabitacionSerializer, ReservaSerializer
 
+from django.views import View
+from rest_framework.views import APIView
 
 class ClienteViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -123,7 +127,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # ✅ EL USUARIO LOGUEADO SE ASIGNA AUTOMÁTICAMENTE
+            #  EL USUARIO LOGUEADO SE ASIGNA AUTOMÁTICAMENTE
             reserva = serializer.save(usuario=request.user)
             habitacion.reservar()
 
@@ -167,3 +171,72 @@ class ReservaViewSet(viewsets.ModelViewSet):
         reservas = self.get_queryset().order_by('-created_at')
         serializer = self.get_serializer(reservas, many=True)
         return Response(serializer.data)
+
+# AQUI USO SQL PURO PARA OPTENER DATOS
+class VentasViews(APIView):
+    """
+    Vista para listar ventas usando SQL nativo
+    """
+    @extend_schema(
+        summary="Lista productos",
+        description="Muestra listado de ventas en consulta a SQLLITE",
+    )
+    def get(self, request, *args, **kwargs):
+        # Obtener fechas de los parámetros de la URL
+        fecha_desde = request.GET.get('fecha_desde')
+        fecha_hasta = request.GET.get('fecha_hasta')
+
+        # Abrir conexión a la base de datos
+        with connection.cursor() as cursor:
+            # Consulta SQL base
+            query = """
+                SELECT id, 
+                fecha, 
+                producto, 
+                categoria, 
+                vendedor, 
+                cantidad, 
+                precio_unitario, 
+                total, 
+                region, 
+                cliente, 
+                metodo_pago
+                FROM transaccionesdatos_venta
+                WHERE 1=1
+            """
+
+            # Lista para los parámetros de la consulta
+            parametros = []
+
+            # Si fecha_desde tiene datos, agregar filtro
+            if fecha_desde:
+                query += " AND fecha >= %s"
+                parametros.append(fecha_desde)
+
+            # Si fecha_hasta tiene datos, agregar filtro
+            if fecha_hasta:
+                query += " AND fecha <= %s"
+                parametros.append(fecha_hasta)
+
+            # Ordenar por fecha descendente
+            query += " ORDER BY fecha DESC"
+
+            # Ejecutar la consulta con los parámetros
+            cursor.execute(query, parametros)
+
+            # Obtener nombres de las columnas
+            columnas = [col[0] for col in cursor.description]
+
+            # Obtener todos los registros
+            filas = cursor.fetchall()
+
+            # Convertir a lista de diccionarios
+            datos = []
+            for fila in filas:
+                venta = {}
+                for i, columna in enumerate(columnas):
+                    venta[columna] = fila[i]
+                datos.append(venta)
+
+            # Devolver en formato JSON
+            return JsonResponse(datos, safe=False)

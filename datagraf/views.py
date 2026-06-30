@@ -12,6 +12,8 @@ from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 
 
+
+
 class ReporteEmpleadosView(View):
     template_name = "reportes/empleados.html"
 
