@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         body { padding-top: 70px; }
-        .table-responsive { max-height: 400px; overflow-y: auto; }
+        .table-responsive { max-height: 500px; overflow-y: auto; }
         .stat-card { transition: transform 0.3s ease; }
         .stat-card:hover { transform: translateY(-5px); }
         .grafico-thumb {
@@ -48,7 +48,7 @@
         <!-- ========================================== -->
         <div class="card shadow mb-4">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-upload"></i> Subir archivo CSV o Excel</h5>
+                <h5 class="mb-0"><i class="bi bi-upload"></i> Seleccione archivo CSV o Excel para analizar</h5>
             </div>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data" action="{% url 'analisis_csv' %}">
@@ -118,7 +118,7 @@
             </div>
         </div>
 
-        <!-- Gráfico (clic para abrir modal) -->
+        <!-- Gráfico -->
         <div class="card shadow mb-4">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">📈 Gráfico Automático <small class="text-light">(clic para ampliar)</small></h4>
@@ -157,6 +157,24 @@
         </div>
 
         <!-- ========================================== -->
+        <!-- TABLA DE DATOS LEÍDOS                      -->
+        <!-- ========================================== -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-table"></i> Datos del Archivo</h5>
+                <span class="badge bg-light text-dark">{{ total_registros }} registros</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    {{ tabla_datos|safe }}
+                </div>
+            </div>
+            <div class="card-footer text-muted small">
+                <i class="bi bi-info-circle"></i> Mostrando primeras 15 filas de {{ total_registros }} registros
+            </div>
+        </div>
+
+        <!-- ========================================== -->
         <!-- ESTADÍSTICAS DESCRIPTIVAS                  -->
         <!-- ========================================== -->
         <div class="card shadow mb-4">
@@ -169,14 +187,14 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>Columna</th>
-                                <th>Count</th>
-                                <th>Mean</th>
-                                <th>Std</th>
-                                <th>Min</th>
-                                <th>25%</th>
-                                <th>50%</th>
-                                <th>75%</th>
-                                <th>Max</th>
+                                <th>Cantidad</th>
+                                <th>Promedio</th>
+                                <th>Desv. Estándar</th>
+                                <th>Mínimo</th>
+<!--                                <th>25%</th>-->
+<!--                                <th>50% (Mediana)</th>-->
+<!--                                <th>75%</th>-->
+                                <th>Máximo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -187,9 +205,9 @@
                                     <td>{{ stats.mean|floatformat:2 }}</td>
                                     <td>{{ stats.std|floatformat:2 }}</td>
                                     <td>{{ stats.min|floatformat:2 }}</td>
-                                    <td>{{ stats.25|floatformat:2 }}</td>
-                                    <td>{{ stats.50|floatformat:2 }}</td>
-                                    <td>{{ stats.75|floatformat:2 }}</td>
+<!--                                    <td>{{ stats.25|floatformat:2 }}</td>-->
+<!--                                    <td>{{ stats.50|floatformat:2 }}</td>-->
+<!--                                    <td>{{ stats.75|floatformat:2 }}</td>-->
                                     <td>{{ stats.max|floatformat:2 }}</td>
                                 </tr>
                             {% endfor %}

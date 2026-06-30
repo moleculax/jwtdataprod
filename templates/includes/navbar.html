@@ -1,21 +1,57 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard/">
-            <i class="bi bi-speedometer2"></i> Dashboard/Home
+        <!-- Logo/Brand -->
+        <a class="navbar-brand fw-bold" href="/dashboard/">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+        <!-- Botón mobile -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Contenido del navbar -->
         <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Enlaces principales CENTRADOS (sin dropdown) -->
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/swagger/" target="_blank">
+                        <i class="bi bi-book me-1"></i>Documentación
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/admin/" target="_blank">
+                        <i class="bi bi-gear me-1"></i>Admin
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/reporte-empleados">
+                        <i class="bi bi-person-lines-fill me-1"></i>Reporte Empleados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/dashboard-graficos">
+                        <i class="bi bi-bar-chart-fill me-1"></i>Promedio Sueldos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="/api/analisis-csv/">
+                        <i class="bi bi-file-earmark-code me-1"></i>Análisis CSV
+                    </a>
+                </li>
+
+            </ul>
+
+            <!-- Usuario y logout (derecha) -->
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <span class="navbar-text text-light me-3">
-                        <i class="bi bi-person-circle"></i> {{ user.username }}
+                        <i class="bi bi-person-circle me-1"></i>{{ user.username }}
                     </span>
                 </li>
                 <li class="nav-item">
-                    <a href="/logout/" class="btn btn-danger btn-sm">
-                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    <a href="/logout/" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
                     </a>
                 </li>
             </ul>

@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
+import numpy as np
 from django.conf import settings
 from django.shortcuts import render
 from django.views import View
@@ -19,7 +20,7 @@ class AnalisisCSVView(APIView):
     @extend_schema(
         summary="Analisis CSV/Excel Generico",
         description="Muestra un reporte segun datos del archivo CSV o Excel elegido",
-        tags=["Analisis CSV"],
+        tags=["Analisis CSV/Excel Generico"],
     )
     def get(self, request, *args, **kwargs):
         return self._analizar_archivo(request)
@@ -32,14 +33,12 @@ class AnalisisCSVView(APIView):
         # 1. OBTENER EL ARCHIVO
         # ==========================================
         if request.method == 'POST' and request.FILES.get('archivo'):
-            # Archivo subido por el usuario
             archivo = request.FILES['archivo']
             sep = request.POST.get('sep', ';')
             nombre_archivo = archivo.name
             extension = nombre_archivo.split('.')[-1].lower()
 
             try:
-                # Detectar formato por extensión
                 if extension in ['csv']:
                     df = pd.read_csv(archivo, sep=sep)
                 elif extension in ['xlsx', 'xls']:
@@ -50,7 +49,6 @@ class AnalisisCSVView(APIView):
             except Exception as e:
                 return JsonResponse({'error': f'Error al leer el archivo: {str(e)}'}, status=400)
         else:
-            # Archivo por defecto (CSV)
             ruta_archivo = request.GET.get('ruta') or os.path.join(settings.BASE_DIR,
                                                                    "data/reportes/excel/logistica.csv")
             sep = request.GET.get('sep', ';')
@@ -78,25 +76,56 @@ class AnalisisCSVView(APIView):
         total_registros = len(df)
 
         # ==========================================
-        # 3. GRÁFICO AUTOMÁTICO
+        # 3. CONVERTIR DATOS A HTML (TABLA) - SOLO PRIMERAS 15 FILAS
+        # ==========================================
+        # Convertir primeras 15 filas a HTML con clases Bootstrap
+        tabla_html = df.head(15).to_html(
+            classes="table table-striped table-hover table-bordered",
+            index=False,
+            justify="left"
+        )
+
+        # ==========================================
+        # 4. GRÁFICO DE BARRAS CON COLORES VIVOS (menor a mayor)
         # ==========================================
         plt.figure(figsize=(12, 6))
 
         if columnas_cat and columnas_num:
             col_cat = columnas_cat[0]
             col_num = columnas_num[0]
-            resumen = df.groupby(col_cat)[col_num].mean().sort_values(ascending=False)
-            resumen.plot(kind='bar', color='skyblue', edgecolor='black')
-            plt.title(f'📊 {col_num} promedio por {col_cat}')
-            plt.xlabel(col_cat)
-            plt.ylabel(f'{col_num} promedio')
+
+            # ORDENAR DE MENOR A MAYOR
+            resumen = df.groupby(col_cat)[col_num].mean().sort_values(ascending=True)
+
+            # Paleta de colores vivos
+            colores_vivos = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+                             '#DDA0DD', '#FF8A5C', '#A29BFE', '#FD79A8', '#00B894',
+                             '#E17055', '#0984E3', '#FDCB6E', '#6C5CE7', '#00CEC9']
+
+            # Asignar colores a cada barra
+            colores = colores_vivos[:len(resumen)]
+
+            # Crear gráfico de barras con colores vivos
+            bars = plt.bar(resumen.index, resumen.values, color=colores, edgecolor='black', linewidth=1.2)
+
+            # Valores encima de las barras
+            for i, v in enumerate(resumen.values):
+                plt.text(i, v + (v * 0.02), f'{v:.1f}',
+                         ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+            plt.title(f'📊 {col_num} promedio por {col_cat}', fontsize=14, fontweight='bold')
+            plt.xlabel(col_cat, fontsize=12)
+            plt.ylabel(f'{col_num} promedio', fontsize=12)
             plt.xticks(rotation=45, ha='right')
+            plt.grid(axis='y', linestyle='--', alpha=0.3)
+
         elif columnas_num:
             col_num = columnas_num[0]
-            df[col_num].hist(bins=20, edgecolor='black')
-            plt.title(f'📊 Distribución de {col_num}')
-            plt.xlabel(col_num)
-            plt.ylabel('Frecuencia')
+            df[col_num].hist(bins=20, edgecolor='black', color='#4ECDC4')
+            plt.title(f'📊 Distribución de {col_num}', fontsize=14, fontweight='bold')
+            plt.xlabel(col_num, fontsize=12)
+            plt.ylabel('Frecuencia', fontsize=12)
+            plt.grid(axis='y', linestyle='--', alpha=0.3)
         else:
             plt.text(0.5, 0.5, 'No hay datos suficientes para graficar',
                      ha='center', va='center', fontsize=14)
@@ -120,6 +149,7 @@ class AnalisisCSVView(APIView):
             'grafico': grafico_base64,
             'nombre_archivo': nombre_archivo,
             'extension': extension,
+            'tabla_datos': tabla_html,
         }
 
         return render(request, 'analisisgenerico/analisis_csv.html', context)
@@ -136,7 +166,6 @@ class AnalisisCSV:
         self._cargar_archivo(sep)
 
     def _cargar_archivo(self, sep):
-        """Carga el archivo según su extensión"""
         if self.extension in ['csv']:
             self.df = pd.read_csv(self.ruta_archivo, sep=sep)
         elif self.extension in ['xlsx', 'xls']:
@@ -145,7 +174,6 @@ class AnalisisCSV:
             raise ValueError(f"Formato no soportado: {self.extension}")
 
     def analisis_general(self):
-        """Muestra un resumen completo del archivo"""
         print(f"📊 Análisis de: {self.nombre_archivo}")
         print(f"📏 Total de registros: {len(self.df)}")
         print(f"📋 Columnas: {list(self.df.columns)}")
@@ -160,26 +188,39 @@ class AnalisisCSV:
         return self.df.select_dtypes(include=['object', 'category']).columns.tolist()
 
     def grafico_automatico(self, guardar=False):
-        """Genera gráficos automáticos según las columnas disponibles"""
+        """Genera gráfico de barras con colores vivos"""
         columnas_num = self.detectar_columnas_numericas()
         columnas_cat = self.detectar_columnas_categoricas()
 
         if columnas_cat and columnas_num:
             col_cat = columnas_cat[0]
             col_num = columnas_num[0]
-            resumen = self.df.groupby(col_cat)[col_num].mean().sort_values(ascending=False)
+
+            resumen = self.df.groupby(col_cat)[col_num].mean().sort_values(ascending=True)
 
             plt.figure(figsize=(12, 6))
-            resumen.plot(kind='bar', color='skyblue', edgecolor='black')
-            plt.title(f'📊 {col_num} promedio por {col_cat}')
-            plt.xlabel(col_cat)
-            plt.ylabel(f'{col_num} promedio')
+
+            colores_vivos = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+                             '#DDA0DD', '#FF8A5C', '#A29BFE', '#FD79A8', '#00B894',
+                             '#E17055', '#0984E3', '#FDCB6E', '#6C5CE7', '#00CEC9']
+
+            colores = colores_vivos[:len(resumen)]
+
+            bars = plt.bar(resumen.index, resumen.values, color=colores, edgecolor='black', linewidth=1.2)
+
+            for i, v in enumerate(resumen.values):
+                plt.text(i, v + (v * 0.02), f'{v:.1f}',
+                         ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+            plt.title(f'📊 {col_num} promedio por {col_cat}', fontsize=14, fontweight='bold')
+            plt.xlabel(col_cat, fontsize=12)
+            plt.ylabel(f'{col_num} promedio', fontsize=12)
             plt.xticks(rotation=45, ha='right')
+            plt.grid(axis='y', linestyle='--', alpha=0.3)
             plt.tight_layout()
 
             if guardar:
-                os.makedirs('data/reportes/graficos', exist_ok=True)
-                ruta = f'data/reportes/graficos/grafico_{col_num}_por_{col_cat}.png'
+                ruta = f'data/reportes/graficos/barras_{col_num}_por_{col_cat}.png'
                 plt.savefig(ruta, dpi=100)
                 print(f"✅ Gráfico guardado en: {ruta}")
 
@@ -188,14 +229,14 @@ class AnalisisCSV:
         elif columnas_num:
             col_num = columnas_num[0]
             plt.figure(figsize=(10, 6))
-            self.df[col_num].hist(bins=20, edgecolor='black')
-            plt.title(f'📊 Distribución de {col_num}')
-            plt.xlabel(col_num)
-            plt.ylabel('Frecuencia')
+            self.df[col_num].hist(bins=20, edgecolor='black', color='#4ECDC4')
+            plt.title(f'📊 Distribución de {col_num}', fontsize=14, fontweight='bold')
+            plt.xlabel(col_num, fontsize=12)
+            plt.ylabel('Frecuencia', fontsize=12)
+            plt.grid(axis='y', linestyle='--', alpha=0.3)
             plt.tight_layout()
 
             if guardar:
-                os.makedirs('data/reportes/graficos', exist_ok=True)
                 ruta = f'data/reportes/graficos/histograma_{col_num}.png'
                 plt.savefig(ruta, dpi=100)
                 print(f"✅ Gráfico guardado en: {ruta}")
