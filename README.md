@@ -33,14 +33,14 @@ Sistema de autenticación con **JWT (JSON Web Tokens)** desarrollado en Django. 
 - ✅ **Seguridad** - Tokens rotativos y blacklist
 
 ---
+## Despliegue en
 
-## 📸 Capturas de pantalla
+| **Recurso** |  |
+| :--- | :--- |
+| 🌐 **URL** | [moleculax.pythonanywhere.com](https://moleculax.pythonanywhere.com/) |
+| 👤 **Usuario** | `admin` |
+| 🔑 **Contraseña** | `admin123` |
 
-### Home Page - Login
-![Home Page](https://github.com/moleculax/Django/blob/main/capturasP/jwtlogin.png?raw=true)
-
-### Dashboard con Tokens
-![Dashboard](https://github.com/moleculax/Django/blob/main/capturasP/dasjwtlogin.png?raw=true)
 
 ---
 
@@ -53,10 +53,5 @@ git clone https://github.com/moleculax/Django.git
 cd Django/jwtlogin
 
 ```
-**Puede verlo en produccion en:**
 
-[https://moleculax.pythonanywhere.com/](https://moleculax.pythonanywhere.com/)
-
-- usuario: admin
-- password: admin123
 

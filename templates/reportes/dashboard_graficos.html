@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Gráficos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .stat-card { transition: transform 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); }
+        body { padding-top: 70px; }
+        .grafica-thumb {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-height: 300px;
+            width: 100%;
+            object-fit: contain;
+        }
+        .grafica-thumb:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .modal-img {
+            max-height: 90vh;
+            width: auto;
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+        .grafica-card {
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        .grafica-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .badge-correlacion {
+            font-size: 0.9rem;
+            background-color: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- NAVBAR IMPORTADO DESDE includes/navbar.html -->
+    <!-- ========================================== -->
+    {% include "../includes/navbar.html" %}
+
+    <!-- ========================================== -->
+    <!-- CONTENIDO PRINCIPAL                         -->
+    <!-- ========================================== -->
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">📊 Dashboard de Análisis de Empleados</h1>
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-primary">
+                    <div class="card-body">
+                        <h2 class="text-primary">{{ stats.total_empleados }}</h2>
+                        <p class="text-muted">👥 Total Empleados</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-success">
+                    <div class="card-body">
+                        <h2 class="text-success">${{ stats.salario_promedio }}</h2>
+                        <p class="text-muted">💰 Sueldo Promedio</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-info">
+                    <div class="card-body">
+                        <h2 class="text-info">{{ stats.edad_promedio }} años</h2>
+                        <p class="text-muted">🎂 Edad Promedio</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card shadow text-center border-warning">
+                    <div class="card-body">
+                        <h2 class="text-warning">{{ stats.departamentos }}</h2>
+                        <p class="text-muted">🏢 Departamentos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICAS UNA AL LADO DE LA OTRA -->
+        <div class="row g-4">
+            <!-- Gráfico 1 -->
+            <div class="col-md-6">
+                <div class="card grafica-card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Sueldos Promedio por Departamento</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="data:image/png;base64,{{ grafico1 }}"
+                             alt="Sueldos por Departamento"
+                             class="grafica-thumb"
+                             data-bs-toggle="modal"
+                             data-bs-target="#modalGrafica1"
+                             title="Haz clic para ampliar">
+                        <div class="mt-2">
+                            <span class="badge bg-primary">Mayor: {{ stats.sueldo_max_departamento }}</span>
+                            <span class="badge bg-secondary">Menor: {{ stats.sueldo_min_departamento }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico 2 -->
+            <div class="col-md-6">
+                <div class="card grafica-card shadow h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-scatter-chart"></i> Experiencia vs Salario</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <img src="data:image/png;base64,{{ grafico2 }}"
+                             alt="Experiencia vs Salario"
+                             class="grafica-thumb"
+                             data-bs-toggle="modal"
+                             data-bs-target="#modalGrafica2"
+                             title="Haz clic para ampliar">
+                        <div class="mt-2">
+                            <span class="badge-correlacion">
+                                <i class="bi bi-link"></i> Correlación: {{ stats.correlacion }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER INFORMATIVO -->
+        <div class="text-center text-muted small mt-4">
+            <i class="bi bi-info-circle"></i> Haz clic en cualquier gráfica para verla en tamaño completo
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: GRÁFICO DE SUELDOS                -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalGrafica1" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-graph-up"></i> Sueldos Promedio por Departamento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="data:image/png;base64,{{ grafico1 }}"
+                         alt="Sueldos por Departamento - Ampliado"
+                         class="modal-img">
+                </div>
+                <div class="modal-footer">
+                    <span class="text-muted">Mayor: {{ stats.sueldo_max_departamento }} | Menor: {{ stats.sueldo_min_departamento }}</span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: EXPERIENCIA VS SALARIO            -->
+    <!-- ========================================== -->
+    <div class="modal fade" id="modalGrafica2" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-scatter-chart"></i> Experiencia vs Salario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="data:image/png;base64,{{ grafico2 }}"
+                         alt="Experiencia vs Salario - Ampliado"
+                         class="modal-img">
+                </div>
+                <div class="modal-footer">
+                    <span class="text-muted">Correlación: {{ stats.correlacion }}</span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOTSTRAP JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
