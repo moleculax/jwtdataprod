@@ -165,3 +165,10 @@ SIMPLE_JWT = {
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://www.anamucpro.online',
+    'https://anamucpro.online',
+    'https://railway.app'
+]
+
